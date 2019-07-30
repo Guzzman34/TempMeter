@@ -150,3 +150,62 @@ RESET:   	STACKINIT			; Инициализация стека
 
 			LDI		R16, 0xFF
 			STS		PRR, R16
+
+;==========================================================
+;	TIMER 1 INIT
+;==========================================================
+
+			CLR		R16
+			TCCR1A	OUT, R16	;pin - disconnect, mode - 0
+			LDI		R16, 0x01
+			TCCR1B	OUT, R16	;clock - no prescaling
+			CLR		R16
+			TCCR1C	OUT, R16
+
+			.equ	DELAY_001 = 0x02	;OCR1A - delay to 1 us
+			.equ	DELAY_050 = 0x04	;OCR1B - delay to 50 us
+			.equ	DELAY_120 = 0x08	;OCR1C - delay to 120 us or other duration
+			.equ	DL_STEP = 0,0000000625?	;no prescaling
+
+			;set 1 us delay - write 16(0x0010) in register OCR1A
+			LDI		R16, 0x10
+			LDI		R17, 0x00
+			OUT		OCR1AH, R17
+			OUT		OCR1AL, R16
+
+			;set 50 us delay - write 800(0x0320) in register OCR1B
+			LDI		R16, 0x20
+			LDI		R17, 0x03
+			OUT		OCR1BH, R17
+			OUT		OCR1BL, R16
+
+			;set 120 us delay - write 1920(0x0780) in register OCR1C
+			LDI		R16, 0x80
+			LDI		R17, 0x07
+			OUT		OCR1CH, R17
+			OUT		OCR1CL, R16
+
+;==========================================================
+;	DISPLAY LCD12864 (ST7920) INIT
+;==========================================================
+
+			;D0 - PD0
+			;D1 - PD1
+			;D2 - PD2
+			;D3 - PD3
+			;D4 - PB4
+			;D5 - PB5
+			;D6 - PB6
+			;D7 - PB7
+			;ED - PD4
+			;RW - PD7
+			;RS - PD6
+
+			LDI		R16, 0xFF
+			OUT		PORTD, R16
+
+			LDI		R16, 0xFF
+			OUT		PORTB, R16
+
+
+
