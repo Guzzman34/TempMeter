@@ -249,3 +249,29 @@ Flush:		ST 		Z+,R16				; Сохраняем 0 в ячейку памяти
 			LDI 	R16, (1<<RXEN)|(1<<TXEN)|(1<<RXCIE)|(1<<TXCIE)|(1<<UDRIE)
 			OUT 	UCSRB, R16	
 	.ENDM
+
+	.MACRO	DSET
+
+			PUSH	R18
+			PUSH	R19
+			IN		R18, PIND
+			ANDI	R18, 0xF0
+			LDI		R19, 0x0F
+			AND		R19, R17
+			OR		R18, R19
+			OUT		PORTD, R18
+
+			IN		R18, PINB
+			ANDI	R18, 0x0F
+			LDI		R19, 0xF0
+			AND		R19, R17
+			OR		R18, R19
+			OUT		PORTB, R18
+			POP		R19
+			POP		R18
+
+	.ENDM
+
+	
+
+

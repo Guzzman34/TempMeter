@@ -9,18 +9,27 @@
 			.include "m32u4def.inc"   ; Используем ATMega328P
 			.include "macro.inc"
 
-			.equ RS_N = 4
-			.equ RW_N = 7
-			.equ ED_N = 6
+			.equ	RS_N = 4
+			.equ	RW_N = 7
+			.equ	ED_N = 6
 
-			.equ RS_P = PORTD
-			.equ RW_P = PORTD
-			.equ ED_P = PORTD
-			.equ DL_P = PORTD
-			.equ DH_P = PORTB
+			.equ	RS_P = PORTD
+			.equ	RW_P = PORTD
+			.equ	ED_P = PORTD
+			.equ	CTRL = PORTD
+			.equ	DL_P = PORTD
+			.equ	DH_P = PORTB
+
+			.equ	DELAY_001 = 0x02	;OCR1A - delay to 1 us
+			.equ	DELAY_050 = 0x04	;OCR1B - delay to 50 us
+			.equ	DELAY_120 = 0x08	;OCR1C - delay to 120 us or other duration
+			.equ	DL_STEP = 0,0625	;no prescaling
+
+			.equ	DCEFS = 0b00110110	;extended command set
+			.equ	DCCLR = 0b00000001	;clear display
 
 			;.equ RS
-			;.equ DL_M = 0xF0
+			;.equ DL_M = 0x0F
 			;.equ DH_M = 0x0F
 			
 
@@ -33,7 +42,8 @@
 			.equ MAXBUFF_IN	 =	10	
 			.equ MAXBUFF_OUT = 	10
 		
-	
+
+DL_FLAGS:	.byte	1
 IN_BUFF:	.byte	MAXBUFF_IN
 IN_PTR_S:	.byte	1
 IN_PTR_E:	.byte	1
@@ -139,8 +149,63 @@ OUT_FULL:	.byte	1
 	 		.ORG   INT_VECTORS_SIZE      	; Конец таблицы прерываний
 
 ;==========================================================
-;	TIMER0 OVERFLOW INTERRUPT HANDLER
+;	DELAY FUNCTION
 ;==========================================================
+
+;R16 – Количество тактов задержки
+DELAY_US:	DEC		R16			;задержка.
+			CPI		R16, 0		;Закончилась?
+			BRNE	DELAY_US    ;Нет - еще раз.             
+			RET
+
+;==========================================================
+;	COMMAND OUT FUNCTION
+;==========================================================
+;R16 - local register
+;R17 - command code
+CMD_OUT:	CBI		CTRL, ED_N
+			CBI		CTRL, RS_N
+			CBI		CTRL, RW_N
+
+			LDI		R16, 1/DL_STEP
+			RCALL	DELAY_US
+
+			SBI		CTRL, ED_N
+			DSET
+
+			LDI		R16, 1/DL_STEP
+			RCALL	DELAY_US
+
+			CBI		CTRL, ED_N
+
+			LDI		R16, 50/DL_STEP
+			RCALL	DELAY_US
+			RET
+
+;==========================================================
+;	DATA OUT FUNCTION
+;==========================================================
+
+;R16 - local register
+;R17 - data
+DAT_OUT:	CBI		CTRL, ED_N
+			SBI		CTRL, RS_N
+			CBI		CTRL, RW_N
+
+			LDI		R16, 1/DL_STEP
+			RCALL	DELAY_US
+
+			SBI		CTRL, ED_N
+			DSET
+
+			LDI		R16, 1/DL_STEP
+			RCALL	DELAY_US
+
+			CBI		CTRL, ED_N
+
+			LDI		R16, 50/DL_STEP
+			RCALL	DELAY_US
+			RET
 
 ;==========================================================
 ;	RUN
@@ -161,11 +226,6 @@ RESET:   	STACKINIT			; Инициализация стека
 			TCCR1B	OUT, R16	;clock - no prescaling
 			CLR		R16
 			TCCR1C	OUT, R16
-
-			.equ	DELAY_001 = 0x02	;OCR1A - delay to 1 us
-			.equ	DELAY_050 = 0x04	;OCR1B - delay to 50 us
-			.equ	DELAY_120 = 0x08	;OCR1C - delay to 120 us or other duration
-			.equ	DL_STEP = 0,0000000625?	;no prescaling
 
 			;set 1 us delay - write 16(0x0010) in register OCR1A
 			LDI		R16, 0x10
@@ -201,11 +261,24 @@ RESET:   	STACKINIT			; Инициализация стека
 			;RW - PD7
 			;RS - PD6
 
+			;set port D
 			LDI		R16, 0xFF
 			OUT		PORTD, R16
 
+			;set port B
 			LDI		R16, 0xFF
 			OUT		PORTB, R16
+
+			;delay 50 us
+			LDI		R16, 50 / DL_STEP
+			RCALL	DELAY_US
+
+			LDI		R17, DCEFS
+			RCALL	CMD_OUT
+
+
+			
+
 
 
 
