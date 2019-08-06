@@ -100,7 +100,7 @@ OUT_FULL:	.byte	1
 			.ORG $0026			; (TIMER1 COMPC) Timer/Counter1 Compare Match C
 			RETI	        
 			.ORG $0028			; (TIMER1 OVF) Timer/Counter1 Overflow
-			RETI		      	
+			RJMP T1_OVF		      	
 			.ORG $002A			; (TIMER0 COMPA) Timer/Counter0 Compare Match A
 			RETI		      	
 			.ORG $002C			; (TIMER0 COMPB) Timer/Counter0 Compare Match B
@@ -147,6 +147,15 @@ OUT_FULL:	.byte	1
 			RETI	      	
 
 	 		.ORG   INT_VECTORS_SIZE      	; Конец таблицы прерываний
+
+
+;==========================================================
+;	TIMER1 OVERFLOW INTERUPT HANDLER
+;==========================================================
+
+T1_OVF:		NOP
+			NOP
+			RETI
 
 ;==========================================================
 ;	DELAY FUNCTION
@@ -208,6 +217,23 @@ DAT_OUT:	CBI		CTRL, ED_N
 			RET
 
 ;==========================================================
+;	REGISTRATION DELAYS FUNCTION
+;==========================================================
+
+; R16 - 1-255
+; R17 - units (us, ms, s)
+REG_DL:		PUSHF
+			PUSH	R17
+			PUSH	R18
+			PUSH	X
+
+			POP		X
+			POP		R18
+			POP		R17
+			POPF
+			RET
+
+;==========================================================
 ;	RUN
 ;==========================================================
 RESET:   	STACKINIT			; Инициализация стека
@@ -245,6 +271,12 @@ RESET:   	STACKINIT			; Инициализация стека
 			OUT		OCR1CH, R17
 			OUT		OCR1CL, R16
 
+			;enable overflow interrupt
+			;------------||   7   |   6   |   5   |   4   |   3   |   2   |   1   |   0    ||
+			;---TIMSK1---||   -   |   -   | ICIE1 |   -   | OCIE1C| OCIE1B| OCIE1A|  TOIE1 ||
+			LDI		R16, 0x01
+			OUT		TIMSK1, R16
+
 ;==========================================================
 ;	DISPLAY LCD12864 (ST7920) INIT
 ;==========================================================
@@ -281,10 +313,32 @@ RESET:   	STACKINIT			; Инициализация стека
 ;	MAIN LOOP
 ;==========================================================
 
-LOOP:		NOP
+LOOP:		
+			IN		R16, TCNT1L
+			IN		R17, TCNT1H
+			LDS		R18, DL_FLAGS
+			MOV		R17, R16
+			ANDI	R16, DELAY_050
+			BRNE	OUT_DL_050
+			//Work with delay 50 us
+
+			;clear bit of the end of the delay 50 us
+			MOV		R16, R17
+			CBR		R16, DELAY_050
+			STS		DL_FLAGS, R16
+
+
+
+			//End work with delay 50 us
+OUT_DL_050:	MOV		R16, R17
+			ANDI	R16, DELAY_120
+			BRNE	OUT_DL_120
+			//Work with delay 120 us
+OUT_DL_120:	NOP
+
 			RJMP	LOOP
 
-SCRNDT1:=	.dw		
+;SCRNDT1:=	.dw		
 
 			
 
