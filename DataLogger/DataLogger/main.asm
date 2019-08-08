@@ -23,7 +23,10 @@
 			.equ	DELAY_001 = 0x02	;OCR1A - delay to 1 us
 			.equ	DELAY_050 = 0x04	;OCR1B - delay to 50 us
 			.equ	DELAY_120 = 0x08	;OCR1C - delay to 120 us or other duration
-			.equ	DL_STEP = 0,0625	;no prescaling
+			.equ	DL_CN_001 = 16
+			.equ	DL_CN_050 = 800
+			.equ	DL_CN_120 = 1920
+;			.equ	DL_STEP = 0,0625	;no prescaling
 
 			.equ	DCEFS = 0b00110110	;extended command set
 			.equ	DCCLR = 0b00000001	;clear display
@@ -176,18 +179,18 @@ CMD_OUT:	CBI		CTRL, ED_N
 			CBI		CTRL, RS_N
 			CBI		CTRL, RW_N
 
-			LDI		R16, 1/DL_STEP
+			LDI		R16, DL_CN_001
 			RCALL	DELAY_US
 
 			SBI		CTRL, ED_N
 			DSET
 
-			LDI		R16, 1/DL_STEP
+			LDI		R16, DL_CN_001
 			RCALL	DELAY_US
 
 			CBI		CTRL, ED_N
 
-			LDI		R16, 50/DL_STEP
+			LDI		R16, DL_CN_050
 			RCALL	DELAY_US
 			RET
 
@@ -201,18 +204,18 @@ DAT_OUT:	CBI		CTRL, ED_N
 			SBI		CTRL, RS_N
 			CBI		CTRL, RW_N
 
-			LDI		R16, 1/DL_STEP
+			LDI		R16, DL_CN_001
 			RCALL	DELAY_US
 
 			SBI		CTRL, ED_N
 			DSET
 
-			LDI		R16, 1/DL_STEP
+			LDI		R16, DL_CN_001
 			RCALL	DELAY_US
 
 			CBI		CTRL, ED_N
 
-			LDI		R16, 50/DL_STEP
+			LDI		R16, DL_CN_050
 			RCALL	DELAY_US
 			RET
 
@@ -222,16 +225,16 @@ DAT_OUT:	CBI		CTRL, ED_N
 
 ; R16 - 1-255
 ; R17 - units (us, ms, s)
-REG_DL:		PUSHF
-			PUSH	R17
-			PUSH	R18
-			PUSH	X
+;REG_DL:		PUSHF
+;			PUSH	R17
+;			PUSH	R18
+;			PUSH	X
 
-			POP		X
-			POP		R18
-			POP		R17
-			POPF
-			RET
+;			POP		X
+;			POP		R18
+;			POP		R17
+;			POPF
+;			RET
 
 ;==========================================================
 ;	RUN
@@ -246,7 +249,7 @@ RESET:   	STACKINIT			; Инициализация стека
 ;	TIMER 1 INIT
 ;==========================================================
 
-			CLR		R16
+/*			CLR		R16
 			TCCR1A	OUT, R16	;pin - disconnect, mode - 0
 			LDI		R16, 0x01
 			TCCR1B	OUT, R16	;clock - no prescaling
@@ -269,13 +272,13 @@ RESET:   	STACKINIT			; Инициализация стека
 			LDI		R16, 0x80
 			LDI		R17, 0x07
 			OUT		OCR1CH, R17
-			OUT		OCR1CL, R16
+			OUT		OCR1CL, R16*/
 
 			;enable overflow interrupt
 			;------------||   7   |   6   |   5   |   4   |   3   |   2   |   1   |   0    ||
 			;---TIMSK1---||   -   |   -   | ICIE1 |   -   | OCIE1C| OCIE1B| OCIE1A|  TOIE1 ||
-			LDI		R16, 0x01
-			OUT		TIMSK1, R16
+			;LDI		R16, 0x01
+			;OUT		TIMSK1, R16
 
 ;==========================================================
 ;	DISPLAY LCD12864 (ST7920) INIT
@@ -303,7 +306,7 @@ RESET:   	STACKINIT			; Инициализация стека
 			OUT		PORTB, R16
 
 			;delay 50 us
-			LDI		R16, 50 / DL_STEP
+			LDI		R16, DL_CN_050
 			RCALL	DELAY_US
 
 			LDI		R17, DCEFS
@@ -313,30 +316,32 @@ RESET:   	STACKINIT			; Инициализация стека
 ;	MAIN LOOP
 ;==========================================================
 
-LOOP:		
-			IN		R16, TCNT1L
-			IN		R17, TCNT1H
-			LDS		R18, DL_FLAGS
-			MOV		R17, R16
-			ANDI	R16, DELAY_050
-			BRNE	OUT_DL_050
+LOOP:		NOP
+			NOP
+			RJMP	LOOP
+			;IN		R16, TCNT1L
+			;IN		R17, TCNT1H
+			;LDS		R18, DL_FLAGS
+			;MOV		R17, R16
+			;ANDI	R16, DELAY_050
+			;BRNE	OUT_DL_050
 			//Work with delay 50 us
 
 			;clear bit of the end of the delay 50 us
-			MOV		R16, R17
-			CBR		R16, DELAY_050
-			STS		DL_FLAGS, R16
+			;MOV		R16, R17
+			;CBR		R16, DELAY_050
+			;STS		DL_FLAGS, R16
 
 
 
 			//End work with delay 50 us
-OUT_DL_050:	MOV		R16, R17
-			ANDI	R16, DELAY_120
-			BRNE	OUT_DL_120
+;OUT_DL_050:	MOV		R16, R17
+;			ANDI	R16, DELAY_120
+;			BRNE	OUT_DL_120
 			//Work with delay 120 us
-OUT_DL_120:	NOP
+;OUT_DL_120:	NOP
 
-			RJMP	LOOP
+;			RJMP	LOOP
 
 ;SCRNDT1:=	.dw		
 

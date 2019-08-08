@@ -1,0 +1,42 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.2.7</VERSION>
+ <DEVICE>"ATmega32U4"</DEVICE>
+ <WORKING_DIR>D:\PROJECTS\TempMeter\DataLogger\DataLogger\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc</DIR>
+  <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m32u4def.inc</FILE>
+  <FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\macro.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\Debug\DataLogger.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>DataLogger.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>DataLogger.map</FILE>
+  <FILE>DataLogger.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <DL_FLAGS><FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</FILE><LINE>49</LINE></DL_FLAGS>
+  <IN_BUFF><FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</FILE><LINE>50</LINE></IN_BUFF>
+  <IN_PTR_S><FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</FILE><LINE>51</LINE></IN_PTR_S>
+  <IN_PTR_E><FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</FILE><LINE>52</LINE></IN_PTR_E>
+  <IN_FULL><FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</FILE><LINE>53</LINE></IN_FULL>
+  <OUT_BUFF><FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</FILE><LINE>55</LINE></OUT_BUFF>
+  <OUT_PTR_S><FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</FILE><LINE>56</LINE></OUT_PTR_S>
+  <OUT_PTR_E><FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</FILE><LINE>57</LINE></OUT_PTR_E>
+  <OUT_FULL><FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</FILE><LINE>58</LINE></OUT_FULL>
+  <Reset><FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</FILE><LINE>242</LINE></Reset>
+  <T1_OVF><FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</FILE><LINE>159</LINE></T1_OVF>
+  <DELAY_US><FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</FILE><LINE>168</LINE></DELAY_US>
+  <CMD_OUT><FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</FILE><LINE>178</LINE></CMD_OUT>
+  <DAT_OUT><FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</FILE><LINE>203</LINE></DAT_OUT>
+  <LOOP><FILE>D:\PROJECTS\TempMeter\DataLogger\DataLogger\main.asm</FILE><LINE>319</LINE></LOOP>
+ </LABELS>
+</ASSEMBLER_INFO>
